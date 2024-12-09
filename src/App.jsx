@@ -1,5 +1,3 @@
-
-
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import "./App.css";
@@ -10,21 +8,16 @@ import Register from "./pages/Register";
 import Forpass from "./pages/forpass";
 import Logout from "./pages/logout";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import Profile from "./pages/profile";
+import { useCurrentUser } from "./context/AuthContext";
 
 function App() {
   const navigate = useNavigate();
+  const { isLoggedIn } = useCurrentUser();
 
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  const allowedPaths = ["/register", "/forpass", "/logout"];
-
-  if (!token && !allowedPaths.includes(window.location.pathname)) {
-    navigate("/login");
-  } else if (token && window.location.pathname === "/login") {
-    navigate("/todo");
+  if (!isLoggedIn) {
+    return <Login />;
   }
-}, [navigate]);
-
 
   return (
     <Routes>
@@ -34,26 +27,26 @@ useEffect(() => {
         element={
           <ProtectedRoute>
             <TodoPage />
-       </ProtectedRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/logout"
         element={
-      <ProtectedRoute>
+          <ProtectedRoute>
             <Logout />
-     </ProtectedRoute>
+          </ProtectedRoute>
         }
       />
-      <Route path="/" element={<Login />} /> 
-   
+      <Route path="/" element={<Login />} />
+
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forpass" element={<Forpass />} />
-      <Route path="*" element={<NotFound />} /> 
+      <Route path="/profile" element={<Profile />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
 
 export default App;
-

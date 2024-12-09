@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { login } from "../Api";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,30 +10,29 @@ export const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       setError("Please enter both email and password.");
       return;
     }
 
- 
     login(email, password)
-    .then(()=>{
-navigate("/todo");
-    })
- 
+      .then(() => {
+        navigate("/todo");
+      })
       .catch((err) => {
-   
-        setError("An error occurred during login.");
+        console.error("Login error:", err.message || err);
+        setError(err.message || "An error occurred during login.");
       });
   };
 
   return (
     <div className="father">
       <div className="wrapper">
-        <form action="" onSubmit={handleLogin}>
+        <form onSubmit={handleLogin}>
           <h1>Login</h1>
-          {error && <div className="error-message">{error}</div>}{" "}
-         
+          {error && <div className="error-message">{error}</div>}
+
           <div className="input-box">
             <input
               type="email"
@@ -47,7 +44,7 @@ navigate("/todo");
           </div>
           <div className="input-box">
             <input
-              type="password" 
+              type="password"
               placeholder="Password"
               required
               value={password}
@@ -62,7 +59,7 @@ navigate("/todo");
               Forgot Password
             </Link>
             <span>
-              Don't have an account?
+              Don't have an account?{" "}
               <Link className="Link" to="/register">
                 Register
               </Link>

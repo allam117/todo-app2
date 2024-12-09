@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { deleteTodo, listTodos, postTodo, updateTodo } from "../Api";
 import { useNavigate } from "react-router-dom";
@@ -9,12 +8,15 @@ const TodoPage = () => {
   const handleLogoutClick = () => {
     navigate("/logout");
   };
+  const handleProfile = () => {
+    navigate("/profile");
+  };
 
   const [todos, setTodos] = useState([]);
   const inputRef = useRef();
 
   const handleInput = async () => {
-    const text = inputRef.current.value.trim(); 
+    const text = inputRef.current.value.trim();
 
     if (!text) {
       alert("Please enter a valid note.");
@@ -22,7 +24,7 @@ const TodoPage = () => {
     }
 
     const newItem = await postTodo(text, "none");
-    setTodos([...todos, newItem]); 
+    setTodos([...todos, newItem]);
     inputRef.current.value = "";
   };
 
@@ -34,7 +36,7 @@ const TodoPage = () => {
   };
 
   const handleDelete = async (id) => {
-    await deleteTodo(id); 
+    await deleteTodo(id);
     setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
   };
 
@@ -46,8 +48,11 @@ const TodoPage = () => {
 
   return (
     <>
+      <button onClick={handleProfile} className="buttodo">
+        <i class="fa-duotone fa-solid fa-user"></i>
+      </button>
       <button onClick={handleLogoutClick} className="logtodo">
-        <i className="fa-solid fa-user"></i>
+        <i class="fa-duotone fa-solid fa-right-from-bracket"></i>
       </button>
       <div className="bady">
         <div className="App">
@@ -63,23 +68,26 @@ const TodoPage = () => {
               Add
             </button>
 
-            <ul className="checkout">
+            <ul>
               {todos.map(({ title, done, id, description }) => (
-                <div className="item" key={id}>
-                  <li className={done ? "done" : ""}>
+                <li key={id} className={done ? "done" : ""}>
+                  <div>
                     <input
+                   
                       type="checkbox"
+                  
                       checked={done}
                       onChange={(e) =>
                         handleClick(id, title, description, e.target.checked)
                       }
                     />
+                    
                     {title}
-                  </li>
+                  </div>
                   <span onClick={() => handleDelete(id)}>
-                    <i className="fa-solid fa-xmark"></i>
+                    <i style={{fontSize:"18px"}} class="fa-solid fa-trash"></i>
                   </span>
-                </div>
+                </li>
               ))}
             </ul>
           </div>

@@ -1,10 +1,6 @@
-import { baseUrl, endpoints } from "./endpoints";
-
 export const login = async (email, password) => {
-  const { method, endpoint } = endpoints.login;
-
-  const res = await fetch(baseUrl + endpoint, {
-    method,
+  const res = await fetch("http://localhost:3000/api/auth/login", {
+    method: "post",
     body: JSON.stringify({ email, password }),
     headers: {
       "Content-type": "application/json",
@@ -19,8 +15,8 @@ export const login = async (email, password) => {
 
   localStorage.setItem("token", data.accessToken);
   return data;
-  
 };
+
 export const logout = async () => {
   const res = await fetch("http://localhost:3000/api/auth/logout", {
     method: "POST",
@@ -35,18 +31,12 @@ export const logout = async () => {
     throw new Error(errorData.message);
   }
 
-  
   localStorage.removeItem("token");
 
   return { message: "Logged out successfully" };
 };
 
-
-
-
 export const register = async (email, password, firstName, lastName) => {
-  // const { method, endpoint } = endpoints.Register;
-
   const register = await fetch("http://localhost:3000/api/auth/register", {
     method: "post",
     body: JSON.stringify({ email, password, firstName, lastName }),
@@ -60,7 +50,7 @@ export const register = async (email, password, firstName, lastName) => {
   if (register.status >= 400) {
     throw new Error(dataRegister.message);
   }
-
+  localStorage.setItem("token", dataRegister.accessToken);
   return dataRegister;
 };
 
@@ -135,12 +125,11 @@ export const updateTodo = async (id, title, description, done) => {
   }
 };
 
-
 export const deleteTodo = async (id) => {
   try {
     const response = await fetch(`http://localhost:3000/api/todos/${id}`, {
       method: "delete",
-      
+
       headers: {
         "Content-type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -157,4 +146,25 @@ export const deleteTodo = async (id) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const fetchProfile = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw "Please log in";
+  }
+
+  const res = await fetch("http://localhost:3000/api/users/profile", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status >= 400) {
+    throw new Error("Failed to fetch profile data");
+  }
+
+  return await res.json();
 };

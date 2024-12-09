@@ -1,39 +1,41 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { register } from "../Api";
 
 const Register = () => {
-  const [name, setName] = useState("");
+  const navigate = useNavigate();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log({
-      name,
-      email,
-      password,
-      confirmPassword,
-    });
-
-    if (password !== confirmPassword) {
-      setError("Passwords not equal confirmPassword ");
-      return;
-    }
-
-    if (!name || !email || !password || !confirmPassword) {
-      setError("All fields are required");
-      return;
-    }
-
-    setSuccess("Account created successfully! Please login.");
     setError("");
+    setSuccess("");
 
-    register(email, password, name, name);
+    try {
+      console.log({
+        firstName,
+        email,
+        password,
+        lastName,
+      });
+
+      if (!firstName || !email || !password || !lastName) {
+        setError("All fields are required");
+        return;
+      }
+
+      await register(email, password, firstName, lastName);
+      setSuccess("Account created successfully! Please login.");
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   return (
@@ -41,15 +43,6 @@ const Register = () => {
       <div className="wrapper">
         <form onSubmit={handleSubmit}>
           <h1>Sign Up</h1>
-          <div className="input-box">
-            <input
-              type="text"
-              placeholder="Name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            ></input>
-          </div>
           <div className="input-box">
             <input
               type="email"
@@ -70,14 +63,24 @@ const Register = () => {
           </div>
           <div className="input-box">
             <input
-              type="Password"
-              placeholder=" Confirm Password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              type="text"
+              placeholder="First Name"
+              // required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             ></input>
           </div>
-          <div>{error && <p>{error}</p>}</div>
+          <div className="input-box">
+            <input
+              type="text"
+              placeholder=" Last name"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            ></input>
+          </div>
+          <div>{error && <p style={{ color: "red" }}>{error}</p>}</div>
+          <div>{success && <p style={{ color: "green" }}>{success}</p>}</div>
           <button className="submit" type="submit">
             submit
           </button>
